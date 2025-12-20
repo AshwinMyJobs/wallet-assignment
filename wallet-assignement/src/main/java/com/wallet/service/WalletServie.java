@@ -2,7 +2,10 @@ package com.wallet.service;
 
 import java.util.UUID;
 
+import javax.management.openmbean.InvalidOpenTypeException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -19,6 +22,7 @@ public class WalletServie {
 	WalletRepository walletRepository;
 
 	@Transactional
+	@Async
 	public Wallet saveWallet(WalletDTO walletDTO) throws Exception {
 
 		Wallet wallet = new Wallet();
@@ -57,6 +61,7 @@ public class WalletServie {
 	}
 
 	@GetMapping()
+	@Async
 	public Integer getWalletBalance(UUID walletId) {
 		return walletRepository.getReferenceById(walletId).getBalance();
 	}
