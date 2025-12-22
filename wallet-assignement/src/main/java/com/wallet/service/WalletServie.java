@@ -2,8 +2,6 @@ package com.wallet.service;
 
 import java.util.UUID;
 
-import javax.management.openmbean.InvalidOpenTypeException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -11,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.wallet.entity.Wallet;
 import com.wallet.entity.WalletDTO;
+import com.wallet.exception.WalletException;
 import com.wallet.repository.WalletRepository;
 
 import jakarta.transaction.Transactional;
@@ -31,7 +30,7 @@ public class WalletServie {
 		Integer amount = walletDTO.getAmount();
 		Integer balance = 0;
 
-		if (walletId==null) {
+		if (walletId==null && (walletDTO.getOperationType().equals("DEPOSIT") || walletDTO.getOperationType().equals("WITHDRAW"))) {
 			wallet.setBalance(amount);
 			wallet.setOperationType(walletDTO.getOperationType());
 			return walletRepository.save(wallet);
@@ -48,12 +47,13 @@ public class WalletServie {
 			case "WITHDRAW":
 				wallet = walletRepository.getReferenceById(walletDTO.getWalletId());
 				balance = wallet.getBalance();
+				if(balance<walletDTO.getAmount()) throw new WalletException("In sufficient funds","403");
 				wallet.setBalance(balance - amount);
 				wallet.setOperationType("WITHDRAW");
 				wallet = walletRepository.save(wallet);
 				break;
 			default:
-				throw new Exception("No valid operation type");
+				throw new WalletException("No valid operation type","400");
 			}
 		}
 
@@ -62,7 +62,7 @@ public class WalletServie {
 
 	@GetMapping()
 	@Async
-	public Integer getWalletBalance(UUID walletId) {
+	public Integer getWalletBalance(UUID walletId) throws WalletException {
 		return walletRepository.getReferenceById(walletId).getBalance();
 	}
 
