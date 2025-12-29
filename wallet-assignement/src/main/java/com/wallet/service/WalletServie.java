@@ -25,12 +25,13 @@ public class WalletServie {
 	public Wallet saveWallet(WalletDTO walletDTO) throws Exception {
 
 		Wallet wallet = new Wallet();
- 
+
 		UUID walletId = walletDTO.getWalletId();
 		Integer amount = walletDTO.getAmount();
 		Integer balance = 0;
 
-		if (walletId==null && (walletDTO.getOperationType().equals("DEPOSIT") || walletDTO.getOperationType().equals("WITHDRAW"))) {
+		if (walletId == null && (walletDTO.getOperationType().equals("DEPOSIT")
+				|| walletDTO.getOperationType().equals("WITHDRAW"))) {
 			wallet.setBalance(amount);
 			wallet.setOperationType(walletDTO.getOperationType());
 			return walletRepository.save(wallet);
@@ -47,13 +48,14 @@ public class WalletServie {
 			case "WITHDRAW":
 				wallet = walletRepository.getReferenceById(walletDTO.getWalletId());
 				balance = wallet.getBalance();
-				if(balance<walletDTO.getAmount()) throw new WalletException("In sufficient funds","403");
+				if (balance < walletDTO.getAmount())
+					throw new WalletException("In sufficient funds", "403");
 				wallet.setBalance(balance - amount);
 				wallet.setOperationType("WITHDRAW");
 				wallet = walletRepository.save(wallet);
 				break;
 			default:
-				throw new WalletException("No valid operation type","400");
+				throw new WalletException("No valid operation type", "400");
 			}
 		}
 
@@ -62,8 +64,14 @@ public class WalletServie {
 
 	@GetMapping()
 	@Async
-	public Integer getWalletBalance(UUID walletId) throws WalletException {
-		return walletRepository.getReferenceById(walletId).getBalance();
+	public Integer getWalletBalance(UUID walletId) throws Exception {
+		Integer balanceAmount = 0;
+		try {
+			 balanceAmount = walletRepository.getReferenceById(walletId).getBalance();
+		} catch (Exception e) {
+			throw new WalletException("dfsfs000", "401");
+		}
+		return balanceAmount;
 	}
 
 }

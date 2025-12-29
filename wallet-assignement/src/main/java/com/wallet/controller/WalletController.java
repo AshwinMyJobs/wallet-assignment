@@ -23,18 +23,6 @@ public class WalletController {
 	@Autowired
 	WalletServie walletServie;
 
-//	@PostMapping("/wallet")
-//	public ResponseEntity<Object> saveWallet(@RequestBody WalletDTO walletDTO) {
-//		System.out.println("Inside the controller ...........");
-//		HttpHeaders headers = new HttpHeaders();
-//		headers.add("Custom-Header", "Custom-Value");
-//		try {
-//			return ResponseEntity.ok().header("Custom-Header", "Custom-Value").body(walletServie.saveWallet(walletDTO));
-//		} catch (Exception e) {
-//			return ResponseEntity.ok().header("Custom-Header", "Custom-Value").body(e.getMessage());
-//		}
-//	}
-	
 	@PostMapping("/wallet")
 	public ResponseEntity<Object> saveWallet(@RequestBody WalletDTO walletDTO) throws Exception {
 		System.out.println("Inside the controller ...........");
@@ -46,7 +34,7 @@ public class WalletController {
 	}
 	
 	@GetMapping("/wallets/{WALLET_UUID}")
-	public ResponseEntity<Object> getWalletBalance(@PathVariable UUID WALLET_UUID) throws WalletException{
+	public ResponseEntity<Object> getWalletBalance(@PathVariable UUID WALLET_UUID) throws Exception{
 		System.out.println(WALLET_UUID);
 		return ResponseEntity.ok().body(walletServie.getWalletBalance(WALLET_UUID));
 	}
